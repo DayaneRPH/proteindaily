@@ -32,7 +32,15 @@ h1{font-size:27px;line-height:1.15;letter-spacing:-.8px;margin:0 0 20px;font-wei
 .modal-back{position:fixed;inset:0;background:#15201870;display:none;align-items:flex-end;justify-content:center;z-index:5;padding:12px}.modal-back.show{display:flex}.modal{width:min(480px,100%);background:#fff;border-radius:22px 22px 18px 18px;padding:20px;max-height:88vh;overflow:auto}.modal-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.modal h2{font-size:19px;margin:0}.close{border:0;background:#f1f4f0;border-radius:50%;width:30px;height:30px;font-size:18px}
 .field{margin:12px 0}.field label{display:block;font-size:11px;color:#69766b;font-weight:700;margin-bottom:6px}.field input,.field select{width:100%;border:1px solid #dfe7df;border-radius:11px;padding:12px;background:#fbfcfa;outline:none;color:var(--ink)}.field input:focus,.field select:focus{border-color:var(--green)}
 .search-results{display:grid;gap:6px;margin-top:8px;max-height:170px;overflow:auto}.result{border:1px solid var(--line);background:white;border-radius:10px;padding:10px;text-align:left;display:flex;justify-content:space-between;align-items:center;font-size:12px}.result.selected{border-color:var(--green);background:#f0faf0}.result small{color:var(--muted)}
-.quantity-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.estimate{background:var(--mint);padding:13px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;margin:14px 0}.estimate strong{font-size:20px;color:var(--green-dark)}.primary{width:100%;border:0;border-radius:12px;background:var(--green);color:white;padding:13px;font-weight:750}.hint{font-size:10px;color:var(--muted);line-height:1.45;margin-top:10px}
+.quantity-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stepper{display:flex;align-items:center;border:1px solid #dfe7df;border-radius:11px;background:#fbfcfa;overflow:hidden;transition:border-color .15s}
+.stepper:focus-within{border-color:var(--green)}
+.stepper input{border:0;border-radius:0;background:transparent;text-align:center;font-weight:700;padding:12px 4px;min-width:0;-moz-appearance:textfield}
+.stepper input::-webkit-outer-spin-button,.stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.step-btn{border:0;background:transparent;color:var(--green-dark);font-size:20px;font-weight:700;width:42px;height:44px;flex:none;display:grid;place-items:center;user-select:none;transition:background .12s}
+.step-btn:hover{background:#eef7ee}
+.step-btn:active{background:#dcf0dd}
+.estimate{background:var(--mint);padding:13px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;margin:14px 0}.estimate strong{font-size:20px;color:var(--green-dark)}.primary{width:100%;border:0;border-radius:12px;background:var(--green);color:white;padding:13px;font-weight:750}.hint{font-size:10px;color:var(--muted);line-height:1.45;margin-top:10px}
 .bottom-note{text-align:center;color:#a1aaa2;font-size:10px;margin-top:23px}
 .section-actions{display:flex;align-items:center;gap:7px}
 .clear-btn{border:0;background:transparent;color:#9a766e;font-size:11px;padding:5px 8px;border-radius:7px;transition:all .15s}
@@ -74,7 +82,14 @@ h1{font-size:27px;line-height:1.15;letter-spacing:-.8px;margin:0 0 20px;font-wei
     <div class="field"><label>REFEIÇÃO</label><select id="mealSelect"><option>Café da manhã</option><option>Almoço</option><option>Lanche</option><option>Jantar</option><option>Ceia</option></select></div>
     <div class="field"><label>BUSCAR ALIMENTO</label><input id="search" placeholder="Ex.: ovo, frango, carne moída..." oninput="renderResults()"><div class="search-results" id="results"></div></div>
     <div class="quantity-row">
-      <div class="field"><label>QUANTIDADE</label><input id="quantity" type="number" min="0" step="any" value="1" oninput="updateEstimate()"></div>
+      <div class="field">
+        <label>QUANTIDADE</label>
+        <div class="stepper">
+          <button type="button" class="step-btn" onclick="stepQuantity(-1)" aria-label="Diminuir quantidade">−</button>
+          <input id="quantity" type="number" inputmode="decimal" min="0" step="any" value="1" oninput="updateEstimate()">
+          <button type="button" class="step-btn" onclick="stepQuantity(1)" aria-label="Aumentar quantidade">+</button>
+        </div>
+      </div>
       <div class="field"><label>UNIDADE</label><select id="unit" onchange="updateEstimate()"><option value="g">gramas</option><option value="un">unidade(s)</option><option value="colher">colher(es) de sopa</option><option value="fatia">fatia(s)</option><option value="copo">copo(s) (200 ml)</option></select></div>
     </div>
     <div class="estimate"><div><div class="eyebrow">Proteína estimada</div><small id="estimateDetail">Selecione um alimento</small></div><strong><span id="estimate">0</span> g</strong></div>
@@ -88,7 +103,7 @@ h1{font-size:27px;line-height:1.15;letter-spacing:-.8px;margin:0 0 20px;font-wei
     <div class="modal-top"><h2>Meta diária de proteína</h2><button type="button" class="close" onclick="closeGoalModal()">×</button></div>
     <div class="field">
       <label>META EM GRAMAS (G)</label>
-      <input id="goalInput" type="number" min="1" max="1000" step="any" placeholder="Ex.: 140" onkeydown="if(event.key==='Enter')saveGoal()">
+      <input id="goalInput" type="number" inputmode="decimal" min="1" max="1000" step="any" placeholder="Ex.: 140" onkeydown="if(event.key==='Enter')saveGoal()">
     </div>
     <button type="button" class="primary" onclick="saveGoal()">Salvar meta</button>
     <p class="hint">Sua meta fica salva neste navegador e atualiza o percentual e o restante do dia na hora.</p>
@@ -151,8 +166,17 @@ function saveGoal(){
   closeGoalModal();
   if(prevTotal<prevGoal&&prevTotal>=goal)celebrate();
 }
+function stepQuantity(dir){
+  const u=$("unit").value;
+  const step=u==="g"?10:1;
+  const current=Number($("quantity").value)||0;
+  let next=Math.round((current+dir*step)*10)/10;
+  if(next<step)next=step;
+  $("quantity").value=next;
+  updateEstimate();
+}
 function renderResults(){let q=$("search").value.toLowerCase().trim();let list=foods.filter(f=>f.name.toLowerCase().includes(q));$("results").innerHTML=list.map(f=>`<button type="button" class="result ${selected&&selected.name===f.name?'selected':''}" onclick="selectFood('${f.name.replace(/'/g,"\\'")}')"><span>${esc(f.name)}<small style="display:block">${esc(f.label)}</small></span><b>${fmt(f.protein)} g/100 g</b></button>`).join("")||'<div class="empty">Nenhum alimento encontrado. Tente outro termo.</div>'}
-function selectFood(name){selected=foods.find(f=>f.name===name);$("search").value=selected.name;let unit=$("unit");unit.value=selected.units.colher?"colher":selected.units.un?"un":selected.units.fatia?"fatia":"g";$("quantity").value=1;renderResults();updateEstimate()}
+function selectFood(name){selected=foods.find(f=>f.name===name);$("search").value=selected.name;let unit=$("unit");unit.value=selected.units.colher?"colher":selected.units.un?"un":selected.units.fatia?"fatia":"g";$("quantity").value=unit.value==="g"?100:1;renderResults();updateEstimate()}
 function gramsFor(f,q,u){if(u==="g")return q;if(f.units[u])return q*f.units[u];return q}
 function updateEstimate(){let q=Math.max(0,Number($("quantity").value)||0),u=$("unit").value,f=selected;if(!f){$("estimate").textContent="0";$("estimateDetail").textContent="Selecione um alimento";return}let grams=gramsFor(f,q,u),p=grams*f.protein/100;$("estimate").textContent=fmt(p);$("estimateDetail").textContent=`Aproximadamente ${fmt(grams)} g de alimento`}
 function addFood(){if(!selected)return;let before=entries.filter(e=>e.date===todayKey()).reduce((s,e)=>s+e.protein,0);let q=Number($("quantity").value);if(!(q>0))return;let u=$("unit").value,grams=gramsFor(selected,q,u),protein=grams*selected.protein/100;let labels={g:"g",un:"un.",colher:"colher(es)",fatia:"fatia(s)",copo:"copo(s)"};entries.push({id:String(Date.now())+Math.random().toString(16).slice(2),date:todayKey(),meal:$("mealSelect").value,name:selected.name,amountLabel:`${fmt(q)} ${labels[u]} · ${fmt(grams)} g estimados`,protein});save();render();closeModal();if(before<goal&&before+protein>=goal)celebrate()}
