@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protein Daily</title>
+<style>
+:root{--green:#269b55;--green-dark:#18783e;--mint:#e9f8e9;--bg:#f5f7f4;--ink:#202820;--muted:#849087;--line:#e9eee8;--white:#fff;--shadow:0 8px 24px rgba(30,70,40,.07)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+button,input,select{font:inherit}button{cursor:pointer}
+.app{max-width:480px;min-height:100vh;margin:auto;background:#fbfcfa;padding:22px 18px 96px;position:relative}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.brand{font-size:13px;font-weight:800;letter-spacing:1.4px;color:var(--green-dark)}.date{font-size:12px;color:var(--muted)}
+h1{font-size:27px;line-height:1.15;letter-spacing:-.8px;margin:0 0 20px;font-weight:750;white-space:nowrap}h1 span{color:var(--green)}@media(max-width:370px){h1{white-space:normal}}
+.hero{background:linear-gradient(130deg,#e8f8e7,#f3fbef);border-radius:20px;padding:19px;margin-bottom:17px;display:flex;align-items:center;gap:18px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.protein-mark{position:absolute;right:14px;top:11px;font-size:22px;opacity:.75;pointer-events:none;line-height:1}
+.hero-info{padding-right:26px;flex:1}
+.progress{width:104px;height:104px;flex:none;position:relative;display:grid;place-items:center}.progress svg{position:absolute;inset:0;transform:rotate(-90deg)}.progress circle{fill:none;stroke:#d4ebd2;stroke-width:8}.progress .bar{stroke:var(--green);stroke-linecap:round;stroke-dasharray:276.46;stroke-dashoffset:276.46;transition:stroke-dashoffset .3s}
+.pct{text-align:center}.pct strong{display:block;font-size:24px;line-height:1.1}.pct small{font-size:10px;color:var(--muted)}
+.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#62856a;font-weight:700}.hero-info .big{font-size:25px;font-weight:800;margin:4px 0;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}.hero-info p{font-size:12px;color:#718274;margin:0;line-height:1.4}
+.goal-inline{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:#718274}
+.edit-goal-btn{border:1px solid #cce3ce;background:rgba(255,255,255,.75);color:var(--green-dark);font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;transition:all .15s}
+.edit-goal-btn:hover{background:#fff;border-color:var(--green)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:23px}.stat{background:white;border:1px solid var(--line);border-radius:14px;padding:13px}.stat label{font-size:11px;color:var(--muted)}.stat strong{display:block;font-size:20px;margin-top:5px}.stat strong.green{color:var(--green)}
+.section-head{display:flex;justify-content:space-between;align-items:center;margin:20px 0 11px}.section-head h2{font-size:16px;margin:0}.text-btn{border:0;background:none;color:var(--green);font-size:12px;font-weight:700;padding:5px}
+.meal{background:white;border:1px solid var(--line);border-radius:15px;padding:14px;margin-bottom:10px;cursor:pointer;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}.meal:hover{border-color:#c9e7cc;box-shadow:0 5px 16px rgba(30,90,45,.06);transform:translateY(-1px)}.meal:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.meal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.meal-name{font-size:14px;font-weight:700}.meal-total{font-size:12px;color:var(--green);font-weight:750}
+.food{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-top:1px solid #f0f3ef;font-size:12px}.food:first-of-type{border-top:0}.food small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.food-right{display:flex;align-items:center;gap:9px;font-weight:700}
+.delete{border:0;background:#f5f7f4;color:#849087;border-radius:7px;width:26px;height:26px;font-size:16px;line-height:1;display:grid;place-items:center;transition:background .15s,color .15s}
+.delete:hover{background:#fdeaea;color:#c93b3b}
+.empty{font-size:12px;color:#a0aaa1;padding:5px 0 2px}
+.add-main{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);width:min(440px,calc(100% - 36px));border:0;border-radius:15px;background:var(--green);color:white;padding:15px;font-size:14px;font-weight:750;box-shadow:0 8px 20px #269b5540}
+.modal-back{position:fixed;inset:0;background:#15201870;display:none;align-items:flex-end;justify-content:center;z-index:5;padding:12px}.modal-back.show{display:flex}.modal{width:min(480px,100%);background:#fff;border-radius:22px 22px 18px 18px;padding:20px;max-height:88vh;overflow:auto}.modal-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.modal h2{font-size:19px;margin:0}.close{border:0;background:#f1f4f0;border-radius:50%;width:30px;height:30px;font-size:18px}
+.field{margin:12px 0}.field label{display:block;font-size:11px;color:#69766b;font-weight:700;margin-bottom:6px}.field input,.field select{width:100%;border:1px solid #dfe7df;border-radius:11px;padding:12px;background:#fbfcfa;outline:none;color:var(--ink)}.field input:focus,.field select:focus{border-color:var(--green)}
+.search-results{display:grid;gap:6px;margin-top:8px;max-height:170px;overflow:auto}.result{border:1px solid var(--line);background:white;border-radius:10px;padding:10px;text-align:left;display:flex;justify-content:space-between;align-items:center;font-size:12px}.result.selected{border-color:var(--green);background:#f0faf0}.result small{color:var(--muted)}
+.quantity-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.estimate{background:var(--mint);padding:13px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;margin:14px 0}.estimate strong{font-size:20px;color:var(--green-dark)}.primary{width:100%;border:0;border-radius:12px;background:var(--green);color:white;padding:13px;font-weight:750}.hint{font-size:10px;color:var(--muted);line-height:1.45;margin-top:10px}
+.bottom-note{text-align:center;color:#a1aaa2;font-size:10px;margin-top:23px}
+.section-actions{display:flex;align-items:center;gap:7px}
+.clear-btn{border:0;background:transparent;color:#9a766e;font-size:11px;padding:5px 8px;border-radius:7px;transition:all .15s}
+.clear-btn.confirming{background:#fdeaea;color:#c93b3b;font-weight:700}
+.celebrate{animation:celebratePulse .8s ease 2}.celebration{position:fixed;inset:0;display:none;align-items:center;justify-content:center;pointer-events:none;z-index:10}.celebration.show{display:flex}.celebrate-card{background:#fff;border:1px solid #d9efda;border-radius:20px;padding:20px 25px;text-align:center;box-shadow:0 15px 50px #183b2440;animation:popIn .45s cubic-bezier(.2,1.5,.4,1)}.celebrate-card .emoji{font-size:35px}.celebrate-card strong{display:block;color:var(--green-dark);font-size:18px;margin:6px 0}.celebrate-card span{font-size:12px;color:var(--muted)}@keyframes celebratePulse{0%,100%{transform:scale(1)}35%{transform:scale(1.025);box-shadow:0 0 0 5px #bde8c4,0 8px 24px rgba(30,70,40,.07)}}@keyframes popIn{from{opacity:0;transform:translateY(15px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(min-width:600px){body{padding:24px 0}.app{border-radius:28px;box-shadow:0 12px 45px #1b3c2515;min-height:calc(100vh - 48px)}.add-main{position:absolute;bottom:22px}}
+</style>
+</head>
+<body>
+<main class="app">
+  <div class="top"><div class="brand">● PROTEIN DAILY</div><div class="date" id="today"></div></div>
+  <h1>Seu progresso de <span>hoje.</span></h1>
+  <section class="hero" id="heroCard">
+    <div class="protein-mark" aria-hidden="true">🍗</div>
+    <div class="progress"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44"/><circle class="bar" id="progressBar" cx="50" cy="50" r="44"/></svg><div class="pct"><strong id="percent">0%</strong><small>da meta</small></div></div>
+    <div class="hero-info">
+      <div class="eyebrow">Proteína consumida</div>
+      <div class="big">
+        <span id="consumed">0</span>
+        <span class="goal-inline">/ <span id="goalText">110</span> g <button type="button" class="edit-goal-btn" onclick="openGoalModal()" title="Editar meta diária">Editar</button></span>
+      </div>
+      <p id="remaining">Faltam 110 g para sua meta diária.</p>
+    </div>
+  </section>
+  <div class="stats">
+    <div class="stat"><label>Consumido hoje</label><strong class="green"><span id="statConsumed">0</span> g</strong></div>
+    <div class="stat"><label>Restante para a meta</label><strong><span id="statRemaining">110</span> g</strong></div>
+  </div>
+  <div class="section-head"><h2>Refeições</h2><div class="section-actions"><button type="button" class="clear-btn" id="clearBtn" onclick="clearToday()">Limpar dia</button><button type="button" class="text-btn" onclick="openModal()">+ Adicionar</button></div></div>
+  <div id="meals"></div>
+  <div class="bottom-note">Valores nutricionais aproximados · Ajuste as porções conforme necessário</div>
+  <button type="button" class="add-main" onclick="openModal()">＋ Registrar alimento</button>
+</main>
+<div class="celebration" id="celebration"><div class="celebrate-card"><div class="emoji">🎉 💪</div><strong>Meta alcançada!</strong><span id="celebrationText">Você chegou aos seus 110 g de proteína hoje.</span></div></div>
+
+<div class="modal-back" id="modalBack" onclick="backdropClose(event)">
+  <section class="modal">
+    <div class="modal-top"><h2>Adicionar alimento</h2><button type="button" class="close" onclick="closeModal()">×</button></div>
+    <div class="field"><label>REFEIÇÃO</label><select id="mealSelect"><option>Café da manhã</option><option>Almoço</option><option>Lanche</option><option>Jantar</option><option>Ceia</option></select></div>
+    <div class="field"><label>BUSCAR ALIMENTO</label><input id="search" placeholder="Ex.: ovo, frango, carne moída..." oninput="renderResults()"><div class="search-results" id="results"></div></div>
+    <div class="quantity-row">
+      <div class="field"><label>QUANTIDADE</label><input id="quantity" type="number" min="0" step="any" value="1" oninput="updateEstimate()"></div>
+      <div class="field"><label>UNIDADE</label><select id="unit" onchange="updateEstimate()"><option value="g">gramas</option><option value="un">unidade(s)</option><option value="colher">colher(es) de sopa</option><option value="fatia">fatia(s)</option><option value="copo">copo(s) (200 ml)</option></select></div>
+    </div>
+    <div class="estimate"><div><div class="eyebrow">Proteína estimada</div><small id="estimateDetail">Selecione um alimento</small></div><strong><span id="estimate">0</span> g</strong></div>
+    <button type="button" class="primary" onclick="addFood()">Adicionar à refeição</button>
+    <p class="hint">As medidas caseiras são aproximações. Para maior precisão, prefira informar o peso em gramas. Alimentos como pão, arroz e frutas também podem ser cadastrados se desejar contabilizar suas proteínas.</p>
+  </section>
+</div>
+
+<div class="modal-back" id="goalModalBack" onclick="goalBackdropClose(event)">
+  <section class="modal">
+    <div class="modal-top"><h2>Meta diária de proteína</h2><button type="button" class="close" onclick="closeGoalModal()">×</button></div>
+    <div class="field">
+      <label>META EM GRAMAS (G)</label>
+      <input id="goalInput" type="number" min="1" max="1000" step="any" placeholder="Ex.: 140" onkeydown="if(event.key==='Enter')saveGoal()">
+    </div>
+    <button type="button" class="primary" onclick="saveGoal()">Salvar meta</button>
+    <p class="hint">Sua meta fica salva neste navegador e atualiza o percentual e o restante do dia na hora.</p>
+  </section>
+</div>
+
+<script>
+const foods=[
+ {name:"Ovo inteiro",protein:12.6,units:{un:50},label:"1 unidade média ≈ 50 g"},
+ {name:"Peito de frango cozido/grelhado",protein:31,units:{un:100,colher:25},label:"100 g"},
+ {name:"Carne moída cozida",protein:26,units:{colher:25},label:"1 colher de sopa cheia ≈ 25 g"},
+ {name:"Patinho bovino grelhado",protein:32,units:{colher:25},label:"100 g"},
+ {name:"Atum em água (drenado)",protein:26,units:{colher:20},label:"100 g"},
+ {name:"Sardinha",protein:25,units:{un:85},label:"100 g"},
+ {name:"Tilápia cozida/grelhada",protein:26,units:{un:100},label:"100 g"},
+ {name:"Queijo muçarela",protein:22.5,units:{fatia:20},label:"1 fatia ≈ 20 g"},
+ {name:"Queijo minas frescal",protein:17,units:{fatia:30},label:"100 g"},
+ {name:"Iogurte natural",protein:4.1,units:{copo:170},label:"100 g; varia por marca"},
+ {name:"Iogurte tipo skyr",protein:10,units:{copo:160},label:"varia por marca"},
+ {name:"Leite integral",protein:3.2,units:{copo:200},label:"100 ml"},
+ {name:"Whey protein",protein:80,units:{un:30},label:"30 g de pó; confira o rótulo"},
+ {name:"Feijão cozido",protein:4.8,units:{colher:25},label:"100 g"},
+ {name:"Lentilha cozida",protein:9,units:{colher:25},label:"100 g"},
+ {name:"Tofu",protein:8,units:{un:100},label:"100 g"},
+ {name:"Pão francês",protein:8,units:{un:50},label:"100 g"},
+ {name:"Arroz branco cozido",protein:2.5,units:{colher:25},label:"100 g"},
+ {name:"Aveia",protein:13.9,units:{colher:10},label:"100 g"},
+ {name:"Banana",protein:1.3,units:{un:80},label:"100 g"}
+];
+const mealNames=["Café da manhã","Almoço","Lanche","Jantar","Ceia"];
+let entries=JSON.parse(localStorage.getItem("proteinDailyEntries")||"[]"), selected=null;
+let goal=Number(localStorage.getItem("proteinDailyGoal")||110);
+if(!(goal>0))goal=110;
+const $=id=>document.getElementById(id);
+function todayKey(){let d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function init(){const d=new Date();$("today").textContent=d.toLocaleDateString("pt-BR",{weekday:"short",day:"numeric",month:"short"});render();renderResults()}
+function save(){localStorage.setItem("proteinDailyEntries",JSON.stringify(entries))}
+function render(){
+ const todays=entries.filter(e=>e.date===todayKey()), total=todays.reduce((s,e)=>s+e.protein,0), pct=Math.min(100,total/goal*100), remaining=Math.max(0,goal-total);
+ $("goalText").textContent=fmt(goal);
+ $("consumed").textContent=fmt(total);$("statConsumed").textContent=fmt(total);$("statRemaining").textContent=fmt(remaining);$("percent").textContent=Math.round(pct)+"%";$("remaining").textContent=total>=goal?"Meta diária alcançada! Muito bem.":`Faltam ${fmt(remaining)} g para sua meta diária.`;$("progressBar").style.strokeDashoffset=276.46*(1-pct/100);
+ $("meals").innerHTML=mealNames.map(name=>{let list=todays.filter(e=>e.meal===name),sum=list.reduce((s,e)=>s+e.protein,0);return `<section class="meal" role="button" tabindex="0" aria-label="Adicionar alimento em ${name}" onclick="openModal('${name}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('${name}')}"><div class="meal-head"><div class="meal-name">${name}</div><div class="meal-total">${fmt(sum)} g proteína</div></div>${list.length?list.map(e=>`<div class="food"><div>${esc(e.name)}<small>${esc(e.amountLabel)}</small></div><div class="food-right">${fmt(e.protein)} g <button type="button" class="delete" title="Excluir" aria-label="Excluir ${esc(e.name)}" onclick="removeEntry(event, '${e.id}')">×</button></div></div>`).join(""):'<div class="empty">Nenhum alimento registrado.</div>'}</section>`}).join("");
+}
+function fmt(n){return (Math.round(n*10)/10).toLocaleString("pt-BR",{maximumFractionDigits:1})}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function openModal(mealName){$("modalBack").classList.add("show");$("search").value="";$("quantity").value=1;selected=null;if(mealName)$("mealSelect").value=mealName;renderResults();updateEstimate()}
+function closeModal(){$("modalBack").classList.remove("show")}
+function backdropClose(e){if(e.target===$("modalBack"))closeModal()}
+function openGoalModal(){$("goalModalBack").classList.add("show");$("goalInput").value=goal;setTimeout(()=>$("goalInput").focus(),50)}
+function closeGoalModal(){$("goalModalBack").classList.remove("show")}
+function goalBackdropClose(e){if(e.target===$("goalModalBack"))closeGoalModal()}
+function saveGoal(){
+  const val=Number($("goalInput").value);
+  if(!(val>0)){$("goalInput").focus();return}
+  const prevTotal=entries.filter(e=>e.date===todayKey()).reduce((s,e)=>s+e.protein,0);
+  const prevGoal=goal;
+  goal=val;
+  localStorage.setItem("proteinDailyGoal",String(goal));
+  render();
+  closeGoalModal();
+  if(prevTotal<prevGoal&&prevTotal>=goal)celebrate();
+}
+function renderResults(){let q=$("search").value.toLowerCase().trim();let list=foods.filter(f=>f.name.toLowerCase().includes(q));$("results").innerHTML=list.map(f=>`<button type="button" class="result ${selected&&selected.name===f.name?'selected':''}" onclick="selectFood('${f.name.replace(/'/g,"\\'")}')"><span>${esc(f.name)}<small style="display:block">${esc(f.label)}</small></span><b>${fmt(f.protein)} g/100 g</b></button>`).join("")||'<div class="empty">Nenhum alimento encontrado. Tente outro termo.</div>'}
+function selectFood(name){selected=foods.find(f=>f.name===name);$("search").value=selected.name;let unit=$("unit");unit.value=selected.units.colher?"colher":selected.units.un?"un":selected.units.fatia?"fatia":"g";$("quantity").value=1;renderResults();updateEstimate()}
+function gramsFor(f,q,u){if(u==="g")return q;if(f.units[u])return q*f.units[u];return q}
+function updateEstimate(){let q=Math.max(0,Number($("quantity").value)||0),u=$("unit").value,f=selected;if(!f){$("estimate").textContent="0";$("estimateDetail").textContent="Selecione um alimento";return}let grams=gramsFor(f,q,u),p=grams*f.protein/100;$("estimate").textContent=fmt(p);$("estimateDetail").textContent=`Aproximadamente ${fmt(grams)} g de alimento`}
+function addFood(){if(!selected)return;let before=entries.filter(e=>e.date===todayKey()).reduce((s,e)=>s+e.protein,0);let q=Number($("quantity").value);if(!(q>0))return;let u=$("unit").value,grams=gramsFor(selected,q,u),protein=grams*selected.protein/100;let labels={g:"g",un:"un.",colher:"colher(es)",fatia:"fatia(s)",copo:"copo(s)"};entries.push({id:String(Date.now())+Math.random().toString(16).slice(2),date:todayKey(),meal:$("mealSelect").value,name:selected.name,amountLabel:`${fmt(q)} ${labels[u]} · ${fmt(grams)} g estimados`,protein});save();render();closeModal();if(before<goal&&before+protein>=goal)celebrate()}
+function removeEntry(event, id){
+  event.stopPropagation();
+  entries=entries.filter(e=>e.id!==id);
+  save();
+  render();
+}
+let clearConfirmTimer;
+function clearToday(){
+  const btn=$("clearBtn");
+  const count=entries.filter(e=>e.date===todayKey()).length;
+  if(!count){
+    btn.textContent="Dia já vazio";
+    clearTimeout(clearConfirmTimer);
+    clearConfirmTimer=setTimeout(()=>{btn.textContent="Limpar dia"},1500);
+    return;
+  }
+  if(!btn.classList.contains("confirming")){
+    btn.classList.add("confirming");
+    btn.textContent="Confirmar limpeza?";
+    clearTimeout(clearConfirmTimer);
+    clearConfirmTimer=setTimeout(()=>{
+      btn.classList.remove("confirming");
+      btn.textContent="Limpar dia";
+    },3000);
+    return;
+  }
+  clearTimeout(clearConfirmTimer);
+  btn.classList.remove("confirming");
+  btn.textContent="Limpar dia";
+  entries=entries.filter(e=>e.date!==todayKey());
+  save();
+  render();
+}
+let celebrationTimer;
+function celebrate(){
+  $("celebrationText").textContent=`Você chegou aos seus ${fmt(goal)} g de proteína hoje.`;
+  const layer=$("celebration"),hero=$("heroCard");
+  layer.classList.add("show");hero.classList.remove("celebrate");void hero.offsetWidth;hero.classList.add("celebrate");
+  clearTimeout(celebrationTimer);
+  celebrationTimer=setTimeout(()=>{layer.classList.remove("show");hero.classList.remove("celebrate")},2300);
+}
+init();
+</script>
+</body>
+</html>
